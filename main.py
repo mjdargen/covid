@@ -53,7 +53,6 @@ def check_updates():
 
 
 def download_files():
-
     # request and download txt
     for file in files:
         r = requests.get(base_url + file)
@@ -64,8 +63,7 @@ def download_files():
 
 def confirmed_county(state, county):
     # read in file
-    cvDF = pd.read_csv(
-        f'{DIR_PATH}/input/time_series_covid19_confirmed_US.csv', encoding='utf-8')
+    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
@@ -105,8 +103,7 @@ def confirmed_county(state, county):
 
 def new_county(state, county):
     # read in file
-    cvDF = pd.read_csv(
-        f'{DIR_PATH}/input/time_series_covid19_confirmed_US.csv', encoding='utf-8')
+    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
@@ -162,8 +159,7 @@ def new_county(state, county):
 
 def confirmed_state(state):
     # read in file
-    cvDF = pd.read_csv(
-        f'{DIR_PATH}/input/time_series_covid19_confirmed_US.csv', encoding='utf-8')
+    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
@@ -202,8 +198,7 @@ def confirmed_state(state):
 
 def new_state(state):
     # read in file
-    cvDF = pd.read_csv(
-        f'{DIR_PATH}/input/time_series_covid19_confirmed_US.csv', encoding='utf-8')
+    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
@@ -258,8 +253,7 @@ def new_state(state):
 
 def confirmed_by_county(state):
     # read in file
-    cvDF = pd.read_csv(
-        f'{DIR_PATH}/input/time_series_covid19_confirmed_US.csv', encoding='utf-8')
+    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
@@ -299,8 +293,7 @@ def confirmed_by_county(state):
 
 def new_by_county(state):
     # read in file
-    cvDF = pd.read_csv(
-        f'{DIR_PATH}/input/time_series_covid19_confirmed_US.csv', encoding='utf-8')
+    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
@@ -350,8 +343,7 @@ def new_by_county(state):
 
 def confirmed_by_state():
     # read in file
-    cvDF = pd.read_csv(
-        f'{DIR_PATH}/input/time_series_covid19_confirmed_US.csv', encoding='utf-8')
+    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
@@ -387,8 +379,7 @@ def confirmed_by_state():
 
 def new_by_state():
     # read in file
-    cvDF = pd.read_csv(
-        f'{DIR_PATH}/input/time_series_covid19_confirmed_US.csv', encoding='utf-8')
+    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
@@ -453,15 +444,26 @@ def generate_docs():
 
 
 def main():
+    # prep, check for updates, download updates
     make_dirs()
     new = check_updates()
     if new:
         print("Downloading new data...")
         download_files()
 
+    # collect state/county input
+    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
     state = input("Enter your state: ").lower().title()
+    while state not in cvDF['Province_State'].unique():
+        print(f'{state} not recognized!')
+        state = input("Enter your state: ").lower().title()
     county = input("Enter your county: ").lower().title()
+    cvDF = cvDF.loc[cvDF['Province_State'] == state]
+    while county not in cvDF['Admin2'].unique():
+        print(f'{county} not recognized!')
+        county = input("Enter your county: ").lower().title()
 
+    # prepare plots
     confirmed_county(state, county)
     new_county(state, county)
     confirmed_state(state)
@@ -471,6 +473,7 @@ def main():
     confirmed_by_state()
     new_by_state()
 
+    # generates sample plots for docs - not needed
     # generate_docs()
 
 
