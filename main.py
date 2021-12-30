@@ -453,25 +453,25 @@ def generate_docs():
 
 
 def main():
-    # make_dirs()
-    # new = check_updates()
-    # if new:
-    #     print("Downloading new data...")
-    #     download_files()
-    #
-    # state = input("Enter your state: ").lower().title()
-    # county = input("Enter your county: ").lower().title()
-    #
-    # confirmed_county(state, county)
-    # new_county(state, county)
-    # confirmed_state(state)
-    # new_state(state)
-    # confirmed_by_county(state)
-    # new_by_county(state)
-    # confirmed_by_state()
-    # new_by_state()
+    make_dirs()
+    new = check_updates()
+    if new:
+        print("Downloading new data...")
+        download_files()
 
-    generate_docs()
+    state = input("Enter your state: ").lower().title()
+    county = input("Enter your county: ").lower().title()
+
+    confirmed_county(state, county)
+    new_county(state, county)
+    confirmed_state(state)
+    new_state(state)
+    confirmed_by_county(state)
+    new_by_county(state)
+    confirmed_by_state()
+    new_by_state()
+
+    # generate_docs()
 
 
 if __name__ == '__main__':
