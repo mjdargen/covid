@@ -434,10 +434,10 @@ def new_by_state():
 
 def generate_docs():
     src = f'{DIR_PATH}/output/confirmed_by_state.html'
-    dst = f'{DIR_PATH}/docs/confirmed_by_state.html'
+    dst = f'{DIR_PATH}/docs/confirmed.html'
     shutil.copyfile(src, dst)
     src = f'{DIR_PATH}/output/new_by_state.html'
-    dst = f'{DIR_PATH}/docs/new_by_state.html'
+    dst = f'{DIR_PATH}/docs/new.html'
     shutil.copyfile(src, dst)
 
     with open(f'{DIR_PATH}/docs/index.html', 'r') as f:
