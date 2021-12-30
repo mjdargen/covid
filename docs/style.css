@@ -1,0 +1,30 @@
+html {
+  font-family: 'Courier New', monospace;
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+table, th, td {
+  border: 1px solid #FFFFFF;
+}
+
+th {
+  font-style: bold;
+}
+
+/* unvisited link */
+a:link {
+  color: lime;
+}
+/* visited link */
+a:visited {
+  color: #893BFF;
+}
+/* mouse over link */
+a:hover {
+  color: #E238EC;
+}
+/* selected link */
+a:active {
+  color: #800000;
+}

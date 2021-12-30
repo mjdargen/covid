@@ -1,0 +1,5 @@
+requests
+filecmp
+pandas
+plotly
+shutil
