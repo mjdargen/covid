@@ -1,4 +1,7 @@
-output
+input/
+output/
+new.csv
+old.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
