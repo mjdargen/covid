@@ -142,11 +142,24 @@ def new_county(state, county):
         # store this index's num of cases for use next time through
         prev = cvDF.loc[index, 'confirmed']
 
-    # filter out zeros
-    cvDF = cvDF.loc[(cvDF['new'] != 0)]
-
     # convert date to a special pandas "datetime" value so it recognizes it
     cvDF.index = pd.to_datetime(cvDF.index, format='%m/%d/%y')
+
+    # convert to list to fill in zeros with averages of next day's data
+    new = cvDF['new'].tolist()
+    for idx, val in enumerate(new):
+        if val == 0:
+            for length, zero in enumerate(new[idx+1:]):
+                if zero != 0:
+                    break
+            length += 1
+            if idx+length >= len(new) and new[-1] == 0:
+                break
+            mean = new[idx+length] // (length+1)
+            new[idx+length] = new[idx+length] - mean * (length)
+            for i in range(length):
+                new[idx+i] = mean
+    cvDF = cvDF.assign(new=new)
 
     # plot the total number of confirmed cases
     fig = px.line(x=cvDF.index, y=cvDF['new'])
@@ -236,8 +249,21 @@ def new_state(state):
         # store this index's num of cases for use next time through
         prev = cvDF.loc[index, 'confirmed']
 
-    # filter out zeros
-    # cvDF = cvDF.loc[(cvDF['new'] != 0)]
+    # convert to list to fill in zeros with averages of next day's data
+    new = cvDF['new'].tolist()
+    for idx, val in enumerate(new):
+        if val == 0:
+            for length, zero in enumerate(new[idx+1:]):
+                if zero != 0:
+                    break
+            length += 1
+            if idx+length >= len(new) and new[-1] == 0:
+                break
+            mean = new[idx+length] // (length+1)
+            new[idx+length] = new[idx+length] - mean * (length)
+            for i in range(length):
+                new[idx+i] = mean
+    cvDF = cvDF.assign(new=new)
 
     # convert date to a special pandas "datetime" value so it recognizes it
     cvDF.index = pd.to_datetime(cvDF.index, format='%m/%d/%y')
@@ -324,6 +350,23 @@ def new_by_county(state):
             # subtract yesterday's confirmed cases from today's confirmed cases
             cvDF.loc[index, col] = prev[-1] - prev[-2]
 
+    # convert to list to fill in zeros with averages of next day's data
+    for col in cvDF.columns:
+        new = cvDF[col].tolist()
+        for idx, val in enumerate(new):
+            if val == 0:
+                for length, zero in enumerate(new[idx+1:]):
+                    if zero != 0:
+                        break
+                length += 1
+                if idx+length >= len(new) and new[-1] == 0:
+                    break
+                mean = new[idx+length] // (length+1)
+                new[idx+length] = new[idx+length] - mean * (length)
+                for i in range(length):
+                    new[idx+i] = mean
+        cvDF[col] = new
+
     # convert date to a special pandas "datetime" value so it recognizes it
     cvDF.index = pd.to_datetime(cvDF.index, format='%m/%d/%y')
 
@@ -409,6 +452,23 @@ def new_by_state():
     # convert date to a special pandas "datetime" value so it recognizes it
     cvDF.index = pd.to_datetime(cvDF.index, format='%m/%d/%y')
 
+    # convert to list to fill in zeros with averages of next day's data
+    for col in cvDF.columns:
+        new = cvDF[col].tolist()
+        for idx, val in enumerate(new):
+            if val == 0:
+                for length, zero in enumerate(new[idx+1:]):
+                    if zero != 0:
+                        break
+                length += 1
+                if idx+length >= len(new) and new[-1] == 0:
+                    break
+                mean = new[idx+length] // (length+1)
+                new[idx+length] = new[idx+length] - mean * (length)
+                for i in range(length):
+                    new[idx+i] = mean
+        cvDF[col] = new
+
     # create a plot and add a trace for each year column
     fig = go.Figure()
     # for every column
@@ -424,12 +484,13 @@ def new_by_state():
 
 
 def generate_docs():
-    src = f'{DIR_PATH}/output/confirmed_by_state.html'
-    dst = f'{DIR_PATH}/docs/confirmed.html'
-    shutil.copyfile(src, dst)
-    src = f'{DIR_PATH}/output/new_by_state.html'
-    dst = f'{DIR_PATH}/docs/new.html'
-    shutil.copyfile(src, dst)
+    local = ['confirmed_Wake', 'new_Wake', 'confirmed_North Carolina', 'new_North Carolina',
+             'confirmed_North Carolina_by_county', 'new_North Carolina_by_county',
+             'confirmed_by_state', 'new_by_state']
+    for f in local:
+        src = f'{DIR_PATH}/output/{f}.html'
+        dst = f'{DIR_PATH}/docs/{f}.html'
+        shutil.copyfile(src, dst)
 
     with open(f'{DIR_PATH}/docs/index.html', 'r') as f:
         contents = f.read().splitlines()
