@@ -61,13 +61,17 @@ def download_files():
             f.write(content)
 
 
-def confirmed_county(state, county):
+def confirmed_county(state, county, mode='cases', show=True):
     # read in file
-    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
+    if mode == 'deaths':
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[2]}', encoding='utf-8')
+    else:
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
-                      'Lat', 'Long_', 'Country_Region'], axis=1)
+                      'Lat', 'Long_', 'Country_Region', 'Population'],
+                     axis=1, errors='ignore')
 
     # filter by state
     cvDF = cvDF.loc[cvDF['Province_State'] == state]
@@ -94,20 +98,25 @@ def confirmed_county(state, county):
 
     # plot the total number of confirmed cases
     fig = px.line(x=cvDF.index, y=cvDF['confirmed'])
-    fig.update_layout(title=f"Number of Confirmed COVID-19 Cases in {county} County",
-                      xaxis_title="Date",
-                      yaxis_title="Confirmed COVID-19 Cases")
-    fig.show()
-    fig.write_html(f'{DIR_PATH}/output/confirmed_{county}.html')
+    title = f"Total Confirmed COVID-19 {mode.title()} in {county} County"
+    yaxis = f"Number of COVID-19 {mode.title()}"
+    fig.update_layout(title=title, xaxis_title="Date", yaxis_title=yaxis)
+    fig.write_html(f'{DIR_PATH}/output/conf_{mode}_{county}.html')
+    if show:
+        fig.show()
 
 
-def new_county(state, county):
+def new_county(state, county, mode='cases', show=True):
     # read in file
-    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
+    if mode == 'deaths':
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[2]}', encoding='utf-8')
+    else:
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
-                      'Lat', 'Long_', 'Country_Region'], axis=1)
+                      'Lat', 'Long_', 'Country_Region', 'Population'],
+                     axis=1, errors='ignore')
 
     # filter by state
     cvDF = cvDF.loc[cvDF['Province_State'] == state]
@@ -161,22 +170,27 @@ def new_county(state, county):
                 new[idx+i] = mean
     cvDF = cvDF.assign(new=new)
 
-    # plot the total number of confirmed cases
+    # plot the number of new cases
     fig = px.line(x=cvDF.index, y=cvDF['new'])
-    fig.update_layout(title=f"Number of New COVID-19 Cases in {county} County",
-                      xaxis_title="Date",
-                      yaxis_title="New COVID-19 Cases")
-    fig.show()
-    fig.write_html(f'{DIR_PATH}/output/new_{county}.html')
+    title = f"New COVID-19 {mode.title()} in {county} County"
+    yaxis = f"Number of COVID-19 {mode.title()}"
+    fig.update_layout(title=title, xaxis_title="Date", yaxis_title=yaxis)
+    fig.write_html(f'{DIR_PATH}/output/new_{mode}_{county}.html')
+    if show:
+        fig.show()
 
 
-def confirmed_state(state):
+def confirmed_state(state, mode='cases', show=True):
     # read in file
-    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
+    if mode == 'deaths':
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[2]}', encoding='utf-8')
+    else:
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
-                      'Lat', 'Long_', 'Country_Region', 'Admin2'], axis=1)
+                      'Lat', 'Long_', 'Country_Region', 'Admin2', 'Population'],
+                     axis=1,  errors='ignore')
 
     # filter by state
     cvDF = cvDF.loc[cvDF['Province_State'] == state]
@@ -202,20 +216,25 @@ def confirmed_state(state):
 
     # plot the total number of confirmed cases
     fig = px.line(x=cvDF.index, y=cvDF['confirmed'])
-    fig.update_layout(title=f"Number of Confirmed COVID-19 Cases in {state}",
-                      xaxis_title="Date",
-                      yaxis_title="Confirmed COVID-19 Cases")
-    fig.show()
-    fig.write_html(f'{DIR_PATH}/output/confirmed_{state}.html')
+    title = f"Total Confirmed COVID-19 {mode.title()} in {state}"
+    yaxis = f"Number of COVID-19 {mode.title()}"
+    fig.update_layout(title=title, xaxis_title="Date", yaxis_title=yaxis)
+    fig.write_html(f'{DIR_PATH}/output/conf_{mode}_{state}.html')
+    if show:
+        fig.show()
 
 
-def new_state(state):
+def new_state(state, mode='cases', show=True):
     # read in file
-    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
+    if mode == 'deaths':
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[2]}', encoding='utf-8')
+    else:
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
-                      'Lat', 'Long_', 'Country_Region', 'Admin2'], axis=1)
+                      'Lat', 'Long_', 'Country_Region', 'Admin2', 'Population'],
+                     axis=1,  errors='ignore')
 
     # filter by state
     cvDF = cvDF.loc[cvDF['Province_State'] == state]
@@ -270,20 +289,25 @@ def new_state(state):
 
     # plot the total number of confirmed cases
     fig = px.line(x=cvDF.index, y=cvDF['new'])
-    fig.update_layout(title=f"Number of New COVID-19 Cases in {state}",
-                      xaxis_title="Date",
-                      yaxis_title="New COVID-19 Cases")
-    fig.show()
-    fig.write_html(f'{DIR_PATH}/output/new_{state}.html')
+    title = f"New COVID-19 {mode.title()} in {state}"
+    yaxis = f"Number of COVID-19 {mode.title()}"
+    fig.update_layout(title=title, xaxis_title="Date", yaxis_title=yaxis)
+    fig.write_html(f'{DIR_PATH}/output/new_{mode}_{state}.html')
+    if show:
+        fig.show()
 
 
-def confirmed_by_county(state):
+def confirmed_by_county(state, mode='cases', show=True):
     # read in file
-    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
+    if mode == 'deaths':
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[2]}', encoding='utf-8')
+    else:
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
-                      'Lat', 'Long_', 'Country_Region'], axis=1)
+                      'Lat', 'Long_', 'Country_Region', 'Population'],
+                     axis=1, errors='ignore')
 
     # filter by state
     cvDF = cvDF.loc[cvDF['Province_State'] == state]
@@ -310,20 +334,25 @@ def confirmed_by_county(state):
         fig = fig.add_trace(go.Scatter(x=cvDF.index, y=cvDF[col], name=col))
 
     # update the graph elements and show
-    fig.update_layout(title=f"Confirmed COVID-19 Cases in {state} by County",
-                      xaxis_title="Date",
-                      yaxis_title="Number of Cases")
-    fig.show()
-    fig.write_html(f'{DIR_PATH}/output/confirmed_{state}_by_county.html')
+    title = f"Total Confirmed COVID-19 {mode.title()} in {state} by County"
+    yaxis = f"Number of COVID-19 {mode.title()}"
+    fig.update_layout(title=title, xaxis_title="Date", yaxis_title=yaxis)
+    fig.write_html(f'{DIR_PATH}/output/conf_{mode}_{state}_by_county.html')
+    if show:
+        fig.show()
 
 
-def new_by_county(state):
+def new_by_county(state, mode='cases', show=True):
     # read in file
-    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
+    if mode == 'deaths':
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[2]}', encoding='utf-8')
+    else:
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
-                      'Lat', 'Long_', 'Country_Region'], axis=1)
+                      'Lat', 'Long_', 'Country_Region', 'Population'],
+                     axis=1, errors='ignore')
 
     # filter by state
     cvDF = cvDF.loc[cvDF['Province_State'] == state]
@@ -377,20 +406,25 @@ def new_by_county(state):
         fig = fig.add_trace(go.Scatter(x=cvDF.index, y=cvDF[col], name=col))
 
     # update the graph elements and show
-    fig.update_layout(title=f"New COVID-19 Cases in {state} by County",
-                      xaxis_title="Date",
-                      yaxis_title="Number of Cases")
-    fig.show()
-    fig.write_html(f'{DIR_PATH}/output/new_{state}_by_county.html')
+    title = f"New COVID-19 {mode.title()} in {state} by County"
+    yaxis = f"Number of COVID-19 {mode.title()}"
+    fig.update_layout(title=title, xaxis_title="Date", yaxis_title=yaxis)
+    fig.write_html(f'{DIR_PATH}/output/new_{mode}_{state}_by_county.html')
+    if show:
+        fig.show()
 
 
-def confirmed_by_state():
+def confirmed_by_state(mode='cases', show=True):
     # read in file
-    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
+    if mode == 'deaths':
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[2]}', encoding='utf-8')
+    else:
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
-                      'Lat', 'Long_', 'Country_Region'], axis=1)
+                      'Lat', 'Long_', 'Country_Region', 'Population'],
+                     axis=1, errors='ignore')
 
     # group all entries (counties) in a state together
     # sum all other columns
@@ -413,20 +447,25 @@ def confirmed_by_state():
         fig = fig.add_trace(go.Scatter(x=cvDF.index, y=cvDF[col], name=col))
 
     # update the graph elements and show
-    fig.update_layout(title="Confirmed COVID-19 Cases by State",
-                      xaxis_title="Date",
-                      yaxis_title="Number of Cases")
-    fig.show()
-    fig.write_html(f'{DIR_PATH}/output/confirmed_by_state.html')
+    title = f"Total Confirmed COVID-19 {mode.title()} by State"
+    yaxis = f"Number of COVID-19 {mode.title()}"
+    fig.update_layout(title=title, xaxis_title="Date", yaxis_title=yaxis)
+    fig.write_html(f'{DIR_PATH}/output/conf_{mode}_by_state.html')
+    if show:
+        fig.show()
 
 
-def new_by_state():
+def new_by_state(mode='cases', show=True):
     # read in file
-    cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
+    if mode == 'deaths':
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[2]}', encoding='utf-8')
+    else:
+        cvDF = pd.read_csv(f'{DIR_PATH}/input/{files[0]}', encoding='utf-8')
 
     # remove columns we don't care about
     cvDF = cvDF.drop(['UID', 'iso2', 'iso3', 'code3', 'FIPS', 'Combined_Key',
-                      'Lat', 'Long_', 'Country_Region'], axis=1)
+                      'Lat', 'Long_', 'Country_Region', 'Population'],
+                     axis=1, errors='ignore')
 
     # group all entries (counties) in a state together
     # sum all other columns
@@ -476,17 +515,17 @@ def new_by_state():
         fig = fig.add_trace(go.Scatter(x=cvDF.index, y=cvDF[col], name=col))
 
     # update the graph elements and show
-    fig.update_layout(title="New COVID-19 Cases by State",
-                      xaxis_title="Date",
-                      yaxis_title="Number of Cases")
-    fig.show()
-    fig.write_html(f'{DIR_PATH}/output/new_by_state.html')
+    title = f"New COVID-19 {mode.title()} by State"
+    yaxis = f"Number of COVID-19 {mode.title()}"
+    fig.update_layout(title=title, xaxis_title="Date", yaxis_title=yaxis)
+    fig.write_html(f'{DIR_PATH}/output/new_{mode}_by_state.html')
+    if show:
+        fig.show()
 
 
 def generate_docs():
-    local = ['confirmed_Wake', 'new_Wake', 'confirmed_North Carolina', 'new_North Carolina',
-             'confirmed_North Carolina_by_county', 'new_North Carolina_by_county',
-             'confirmed_by_state', 'new_by_state']
+    local = ['conf_cases_by_state', 'conf_cases_North Carolina', 'conf_cases_North Carolina_by_county', 'conf_cases_Wake', 'conf_deaths_by_state', 'conf_deaths_North Carolina', 'conf_deaths_North Carolina_by_county', 'conf_deaths_Wake',
+             'new_cases_by_state', 'new_cases_North Carolina', 'new_cases_North Carolina_by_county', 'new_cases_Wake', 'new_deaths_by_state', 'new_deaths_North Carolina', 'new_deaths_North Carolina_by_county', 'new_deaths_Wake']
     for f in local:
         src = f'{DIR_PATH}/output/{f}.html'
         dst = f'{DIR_PATH}/docs/{f}.html'
@@ -525,14 +564,15 @@ def main():
         county = input("Enter your county: ").lower().title()
 
     # prepare plots
-    confirmed_county(state, county)
-    new_county(state, county)
-    confirmed_state(state)
-    new_state(state)
-    confirmed_by_county(state)
-    new_by_county(state)
-    confirmed_by_state()
-    new_by_state()
+    for mode in ['cases', 'deaths']:
+        confirmed_county(state, county, mode, True)
+        new_county(state, county, mode, True)
+        confirmed_state(state, mode, True)
+        new_state(state, mode, True)
+        confirmed_by_county(state, mode, True)
+        new_by_county(state, mode, True)
+        confirmed_by_state(mode, True)
+        new_by_state(mode, True)
 
     # generates sample plots for docs - not needed
     # generate_docs()
